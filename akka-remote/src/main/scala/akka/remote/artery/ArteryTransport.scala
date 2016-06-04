@@ -323,7 +323,6 @@ private[remote] class ArteryTransport(_system: ExtendedActorSystem, _provider: R
     val materializerSettings = ActorMaterializerSettings(
       remoteSettings.config.getConfig("akka.remote.artery.advanced.materializer"))
     materializer = ActorMaterializer(materializerSettings)(system)
-    materializer = ActorMaterializer()(system)
 
     messageDispatcher = new MessageDispatcher(system, provider)
 
