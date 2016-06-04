@@ -481,7 +481,8 @@ trait Actor {
    * @param receive current behavior.
    * @param msg current message.
    */
-  protected[akka] def aroundReceive(receive: Actor.Receive, msg: Any): Unit = receive.applyOrElse(msg, unhandled)
+  protected[akka] def aroundReceive(receive: Actor.Receive, msg: Any): Unit =
+    if (receive.isDefinedAt(msg)) receive(msg) else unhandled(msg)
 
   /**
    * Can be overridden to intercept calls to `preStart`. Calls `preStart` by default.
