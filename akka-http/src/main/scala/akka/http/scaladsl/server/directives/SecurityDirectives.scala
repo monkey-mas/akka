@@ -97,7 +97,7 @@ trait SecurityDirectives {
       authenticateOrRejectWithChallenge[BasicHttpCredentials, T] { cred ⇒
         authenticator(Credentials(cred)).fast.map {
           case Some(t) ⇒ AuthenticationResult.success(t)
-          case None    ⇒ AuthenticationResult.failWithChallenge(challengeFor(realm))
+          case None    ⇒ AuthenticationResult.failWithChallenge(basicChallengeFor(realm))
         }
       }
     }
@@ -256,7 +256,7 @@ trait SecurityDirectives {
    *
    * @group security
    */
-  def challengeFor(realm: String) = HttpChallenge(scheme = "Basic", realm = realm, params = Map.empty)
+  def basicChallengeFor(realm: String) = HttpChallenge(scheme = "Basic", realm = realm, params = Map.empty)
 
   /**
    * Creates an `OAuth2` [[HttpChallenge]] for the given realm.
