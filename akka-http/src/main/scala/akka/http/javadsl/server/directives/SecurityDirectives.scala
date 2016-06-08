@@ -261,4 +261,8 @@ abstract class SecurityDirectives extends SchemeDirectives {
    */
   def challengeFor(realm: String): HttpChallenge = HttpChallenge.create("Basic", realm)
 
+  /**
+   * Creates an `OAuth2` [[HttpChallenge]] for the given realm.
+   */
+  def oAuth2ChallengeFor(realm: String): HttpChallenge = HttpChallenge.create("Bearer", realm)
 }

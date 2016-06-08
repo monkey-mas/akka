@@ -19,6 +19,7 @@ class SecurityDirectivesSpec extends RoutingSpec {
   val authWithAnonymous = doBasicAuth.withAnonymousUser("We are Legion")
 
   val challenge = HttpChallenge("Basic", "MyRealm")
+  val oAuth2Challenge = HttpChallenge("Bearer", "MyRealm")
 
   "basic authentication" should {
     "reject requests without Authorization header with an AuthenticationFailedRejection" in {
@@ -37,7 +38,7 @@ class SecurityDirectivesSpec extends RoutingSpec {
       } ~> check {
         status shouldEqual StatusCodes.Unauthorized
         responseAs[String] shouldEqual "The supplied authentication is invalid"
-        header[`WWW-Authenticate`] shouldEqual Some(`WWW-Authenticate`(challenge))
+        header[`WWW-Authenticate`] shouldEqual Some(`WWW-Authenticate`(oAuth2Challenge))
       }
     }
     "reject requests with illegal Authorization header with 401" in {
@@ -74,12 +75,12 @@ class SecurityDirectivesSpec extends RoutingSpec {
     "reject requests without Authorization header with an AuthenticationFailedRejection" in {
       Get() ~> {
         dontOAuth2Auth { echoComplete }
-      } ~> check { rejection shouldEqual AuthenticationFailedRejection(CredentialsMissing, challenge) }
+      } ~> check { rejection shouldEqual AuthenticationFailedRejection(CredentialsMissing, oAuth2Challenge) }
     }
     "reject unauthenticated requests with Authorization header with an AuthenticationFailedRejection" in {
       Get() ~> Authorization(OAuth2BearerToken("myToken")) ~> {
         dontOAuth2Auth { echoComplete }
-      } ~> check { rejection shouldEqual AuthenticationFailedRejection(CredentialsRejected, challenge) }
+      } ~> check { rejection shouldEqual AuthenticationFailedRejection(CredentialsRejected, oAuth2Challenge) }
     }
     "reject requests with a Basic Authorization header with 401" in {
       Get() ~> Authorization(BasicHttpCredentials("Alice", "")) ~> Route.seal {
@@ -96,7 +97,7 @@ class SecurityDirectivesSpec extends RoutingSpec {
       } ~> check {
         status shouldEqual StatusCodes.Unauthorized
         responseAs[String] shouldEqual "The resource requires authentication, which was not supplied with the request"
-        header[`WWW-Authenticate`] shouldEqual Some(`WWW-Authenticate`(challenge))
+        header[`WWW-Authenticate`] shouldEqual Some(`WWW-Authenticate`(oAuth2Challenge))
       }
     }
     "extract the object representing the user identity created by successful authentication" in {

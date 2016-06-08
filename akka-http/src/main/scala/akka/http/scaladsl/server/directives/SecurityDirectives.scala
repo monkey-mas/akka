@@ -17,9 +17,11 @@ import scala.util.{ Try, Success }
 
 /**
  * Provides directives for securing an inner route using the standard Http authentication headers [[`WWW-Authenticate`]]
- * and [[Authorization]]. Most prominently, HTTP Basic authentication as defined in RFC 2617.
+ * and [[Authorization]]. Most prominently, HTTP Basic authentication and OAuth 2.0 Authorization Framework
+ * as defined in RFC 2617 and RFC 6750 respectively.
  *
  * See: <a href="https://www.ietf.org/rfc/rfc2617.txt">RFC 2617</a>.
+ * See: <a href="https://www.ietf.org/rfc/rfc6750.txt">RFC 6750</a>.
  *
  * @groupname security Security directives
  * @groupprio security 220
@@ -146,7 +148,7 @@ trait SecurityDirectives {
       authenticateOrRejectWithChallenge[OAuth2BearerToken, T] { cred ⇒
         authenticator(Credentials(cred)).fast.map {
           case Some(t) ⇒ AuthenticationResult.success(t)
-          case None    ⇒ AuthenticationResult.failWithChallenge(challengeFor(realm))
+          case None    ⇒ AuthenticationResult.failWithChallenge(oAuth2ChallengeFor(realm))
         }
       }
     }
@@ -255,6 +257,13 @@ trait SecurityDirectives {
    * @group security
    */
   def challengeFor(realm: String) = HttpChallenge(scheme = "Basic", realm = realm, params = Map.empty)
+
+  /**
+   * Creates an `OAuth2` [[HttpChallenge]] for the given realm.
+   *
+   * @group security
+   */
+  def oAuth2ChallengeFor(realm: String) = HttpChallenge(scheme = "Bearer", realm = realm, params = Map.empty)
 }
 
 object SecurityDirectives extends SecurityDirectives
