@@ -97,7 +97,7 @@ trait SecurityDirectives {
       authenticateOrRejectWithChallenge[BasicHttpCredentials, T] { cred ⇒
         authenticator(Credentials(cred)).fast.map {
           case Some(t) ⇒ AuthenticationResult.success(t)
-          case None    ⇒ AuthenticationResult.failWithChallenge(basicChallengeFor(realm))
+          case None    ⇒ AuthenticationResult.failWithChallenge(HttpChallenge.toBasic(realm))
         }
       }
     }
@@ -148,7 +148,7 @@ trait SecurityDirectives {
       authenticateOrRejectWithChallenge[OAuth2BearerToken, T] { cred ⇒
         authenticator(Credentials(cred)).fast.map {
           case Some(t) ⇒ AuthenticationResult.success(t)
-          case None    ⇒ AuthenticationResult.failWithChallenge(oAuth2ChallengeFor(realm))
+          case None    ⇒ AuthenticationResult.failWithChallenge(HttpChallenge.toOAuth2(realm))
         }
       }
     }
